@@ -1,8 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:user/data/categories.dart';
 import 'package:user/models/category.dart';
-import 'package:user/models/grocery_item.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class NewItem extends StatefulWidget {
   const NewItem({super.key});
@@ -17,14 +17,32 @@ class _NewItemState extends State<NewItem> {
   var _enteredQuantity = 1;
   var _selectedCategory = categories[Categories.vegetables]!;
 
-  void _saveItam() {
-    if (_formkey.currentState!.validate()) _formkey.currentState!.save();
+  void _saveItam() async {
+    if (_formkey.currentState!.validate()) {
+      _formkey.currentState!.save();
 
-    Navigator.of(context).pop(GroceryItem(
-        id: DateTime.now().toString(),
-        name: _enterName,
-        quantity: _enteredQuantity,
-        category: _selectedCategory));
+      var url =
+          "https://flutter-37804-default-rtdb.firebaseio.com/" + "data.json";
+
+      try {
+        final response = await http.post(
+          Uri.parse(url),
+          body: json.encode({
+            "name": _enterName,
+            "quantity": _enteredQuantity,
+            "category": _selectedCategory.title
+          }),
+        );
+      } catch (error) {
+        throw error;
+      }
+    }
+
+    if (!context.mounted) {
+      return;
+    }
+
+    Navigator.of(context).pop();
   }
 
   @override
@@ -85,20 +103,18 @@ class _NewItemState extends State<NewItem> {
                               for (final cate in categories.entries)
                                 DropdownMenuItem(
                                   value: cate.value,
-                                  child: Expanded(
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          width: 12,
-                                          height: 12,
-                                          color: cate.value.color,
-                                        ),
-                                        const SizedBox(
-                                          width: 6,
-                                        ),
-                                        Text(cate.value.title)
-                                      ],
-                                    ),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 12,
+                                        height: 12,
+                                        color: cate.value.color,
+                                      ),
+                                      const SizedBox(
+                                        width: 6,
+                                      ),
+                                      Text(cate.value.title)
+                                    ],
                                   ),
                                 )
                             ],
