@@ -60,7 +60,6 @@ class _GroceyListState extends State<GroceyList> {
 
     final response = await http.get(Uri.parse(url));
     if (response.statusCode >= 400) {
-      print(response.statusCode + 1111111);
       print("object");
       setState(() {
         error = "apida qandaydir xatolik bor uka sanda ayb yo'q";

@@ -33,6 +33,7 @@ class _NewItemState extends State<NewItem> {
             "category": _selectedCategory.title
           }),
         );
+        // Navigator.of(context).pop();
       } catch (error) {
         throw error;
       }
